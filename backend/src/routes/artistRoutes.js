@@ -8,25 +8,29 @@ const router = express.Router();
 router.use(authenticate);
 
 // CRUD routes
-router.post("/", checkRole(["artist_manager"]), artistController.createArtist);
+router.post(
+  "/",
+  checkRole(["artist_manager", "admin"]),
+  artistController.createArtist
+);
 router.get(
   "/",
-  checkRole(["super_admin", "artist_manager"]),
+  checkRole(["super_admin", "artist_manager", "admin"]),
   artistController.getAllArtists
 );
 router.get(
   "/:id",
-  checkRole(["artist_manager"]),
+  checkRole(["artist_manager", "admin"]),
   artistController.getArtistById
 );
 router.put(
   "/:id",
-  checkRole(["artist_manager"]),
+  checkRole(["artist_manager", "admin"]),
   artistController.updateArtist
 );
 router.delete(
   "/:id",
-  checkRole(["artist_manager"]),
+  checkRole(["artist_manager", "admin"]),
   artistController.deleteArtist
 );
 

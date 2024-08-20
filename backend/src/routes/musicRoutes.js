@@ -8,23 +8,27 @@ const router = express.Router();
 router.use(authenticate);
 
 // CRUD routes
-router.post("/", checkRole(["artist"]), musicController.createMusic);
+router.post("/", checkRole(["artist", "admin"]), musicController.createMusic);
 router.get(
   "/",
-  checkRole(["super_admin", "artist_manager", "artist"]),
+  checkRole(["super_admin", "artist_manager", "artist", "admin"]),
   musicController.getAllMusic
 );
 router.get(
   "/artist/:artistId",
-  checkRole(["super_admin", "artist_manager"]),
+  checkRole(["super_admin", "artist_manager", "admin"]),
   musicController.getMusicByArtistId
 ); // New route
 router.get(
   "/:id",
-  checkRole(["super_admin", "artist_manager", "artist"]),
+  checkRole(["super_admin", "artist_manager", "artist", "admin"]),
   musicController.getMusicById
 );
-router.put("/:id", checkRole(["artist"]), musicController.updateMusic);
-router.delete("/:id", checkRole(["artist"]), musicController.deleteMusic);
+router.put("/:id", checkRole(["artist", "admin"]), musicController.updateMusic);
+router.delete(
+  "/:id",
+  checkRole(["artist", "admin"]),
+  musicController.deleteMusic
+);
 
 module.exports = router;

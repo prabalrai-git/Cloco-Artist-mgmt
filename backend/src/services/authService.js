@@ -18,7 +18,6 @@ const registerUser = async (userData) => {
     dob,
     gender,
     address,
-    role_id,
   } = userData;
   const hashedPassword = await bcrypt.hash(password, saltRounds);
 
@@ -26,6 +25,12 @@ const registerUser = async (userData) => {
     INSERT INTO user (first_name, last_name, email, password, phone, dob, gender, address, role_id)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
+
+  // registerd user is always admin with full priviliges
+  const [roleResult] = await db
+    .promise()
+    .query("SELECT * from roles WHERE role = ?", ["admin"]);
+  const role_id = roleResult[0]?.id;
 
   try {
     const [result] = await db

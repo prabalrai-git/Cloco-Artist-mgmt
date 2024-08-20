@@ -37,11 +37,9 @@ const checkRole = (roles) => {
       .query("SELECT * from roles WHERE id = ?", [decoded.id]);
     const userRole = results[0]?.role;
     if (!roles.includes(userRole)) {
-      return res
-        .status(403)
-        .json({
-          message: "You do not have permissions to perform this action",
-        });
+      return res.status(403).json({
+        message: "You do not have permissions to perform this action",
+      });
     }
 
     next();

@@ -14,10 +14,10 @@ const router = express.Router();
 router.use(authenticate);
 
 // CRUD routes
-router.post("/", checkRole(["super_admin"]), createUser);
-router.get("/", checkRole(["super_admin"]), getAllUsers);
-router.get("/:id", checkRole(["super_admin"]), getUserById);
-router.put("/:id", checkRole(["super_admin"]), updateUser);
-router.delete("/:id", checkRole(["super_admin"]), deleteUser);
+router.post("/", checkRole(["super_admin", "admin"]), createUser);
+router.get("/", checkRole(["super_admin", "admin"]), getAllUsers);
+router.get("/:id", checkRole(["super_admin", "admin"]), getUserById);
+router.put("/:id", checkRole(["super_admin", "admin"]), updateUser);
+router.delete("/:id", checkRole(["super_admin", "admin"]), deleteUser);
 
 module.exports = router;

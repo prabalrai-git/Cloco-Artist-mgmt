@@ -32,7 +32,7 @@ connection.query(createDbQuery, (err, results) => {
     const createRolesTableQuery = `
       CREATE TABLE IF NOT EXISTS roles (
         id INT AUTO_INCREMENT PRIMARY KEY,
-        role ENUM('super_admin', 'artist_manager', 'artist') NOT NULL
+        role ENUM('super_admin', 'artist_manager', 'artist',"admin") NOT NULL
       )
     `;
 
@@ -95,7 +95,7 @@ connection.query(createDbQuery, (err, results) => {
 
       const insertRolesQuery = `
       INSERT IGNORE INTO roles (role)
-      VALUES ('super_admin'), ('artist_manager'), ('artist')
+      VALUES ('super_admin'), ('artist_manager'), ('artist'),('admin')
     `;
       connection.query(insertRolesQuery, (err, results) => {
         if (err) {
