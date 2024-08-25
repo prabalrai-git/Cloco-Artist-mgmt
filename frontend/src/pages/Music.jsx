@@ -1,22 +1,17 @@
 import React from "react";
-import { Table, Button } from "antd";
-import { useNavigate, useParams } from "react-router-dom";
-
-const dummySongs = [
-  {
-    id: 2,
-    title: "Syndicate",
-    album_name: "Ode to my father",
-    genre: "Experimental",
-    created_at: "2024-08-19T16:43:21.000Z",
-    updated_at: "2024-08-19T16:44:49.000Z",
-    artist_id: 1,
-  },
-];
+import { Table, Button, message } from "antd";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { deleteMusic, getMusicListByArtistId } from "../api/musicServices";
 
 const Music = () => {
   const navigate = useNavigate();
-  const { artistId } = useParams();
+  const [params, setParams] = useSearchParams();
+
+  const { data, error } = useQuery({
+    queryKey: ["songs"],
+    queryFn: () => getMusicListByArtistId(params.get("artist_id")),
+  });
 
   const columns = [
     {
@@ -34,31 +29,61 @@ const Music = () => {
       dataIndex: "genre",
       key: "genre",
     },
-    // {
-    //   title: "Created At",
-    //   dataIndex: "created_at",
-    //   key: "created_at",
-    // },
-    // {
-    //   title: "Updated At",
-    //   dataIndex: "updated_at",
-    //   key: "updated_at",
-    // },
+    {
+      title: "Actions",
+      key: "actions",
+      render: (text, record) => (
+        <div className="flex gap-5">
+          <Button>Edit</Button>
+          <Button onClick={() => onDelete(record.id)} danger>
+            Delete
+          </Button>
+        </div>
+      ),
+    },
   ];
+
+  const queryClient = useQueryClient();
+
+  const { mutate } = useMutation({
+    mutationFn: (id) => deleteMusic(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries("songs");
+      message.success("Song deleted successfully.");
+    },
+    onError: (err) => {
+      message.error(err.message ? err.message : "Error deleting song");
+    },
+  });
+
+  const onDelete = (id) => {
+    mutate(id);
+  };
 
   return (
     <div>
       <div className="flex justify-between items-center">
-        <h1>Songs for Artist {artistId}</h1>
-        <Button
-          onClick={() => navigate("/artists")}
-          style={{ marginBottom: "16px" }}
-        >
-          Back
-        </Button>
+        <h1>{params.get("name")}'s Songs</h1>
+        <div className="flex gap-5">
+          <Button
+            onClick={() =>
+              navigate(`/music/create?artist_id=${params.get("artist_id")}`)
+            }
+            type="primary"
+            style={{ marginBottom: "16px" }}
+          >
+            Add a new song
+          </Button>
+          <Button
+            onClick={() => navigate("/artists")}
+            style={{ marginBottom: "16px" }}
+          >
+            Back
+          </Button>
+        </div>
       </div>
 
-      <Table dataSource={dummySongs} columns={columns} rowKey="id" />
+      <Table dataSource={data?.music} columns={columns} rowKey="id" />
     </div>
   );
 };

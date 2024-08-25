@@ -8,32 +8,35 @@ import {
   InputNumber,
   message,
 } from "antd";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addArtist } from "../api/artistServices";
+import { addMusic } from "../api/musicServices";
 
 const { Option } = Select;
 
-const CreateArtist = () => {
+const CreateSong = () => {
+  const [params, setParams] = useSearchParams();
+
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   const { mutate } = useMutation({
-    mutationFn: addArtist,
+    mutationFn: addMusic,
     onSuccess: () => {
-      queryClient.invalidateQueries("artists");
-      message.success("Artist created successfully.");
+      queryClient.invalidateQueries("songs");
+      message.success("Song added successfully.");
       navigate("/artists");
     },
     onError: (err) => {
-      message.error(err.message ? err.message : "Error creating artist");
+      message.error(err.message ? err.message : "Error adding song");
     },
   });
 
   const onFinish = (values) => {
     const dataToPost = {
       ...values,
-      dob: values.dob.toISOString().split("T")[0],
+      artist_id: params.get("artist_id"),
     };
     mutate(dataToPost);
   };
@@ -41,7 +44,7 @@ const CreateArtist = () => {
   return (
     <div>
       <div className="flex justify-between items-center">
-        <h1>Create New Artist</h1>
+        <h1>Add a song</h1>
         <Button
           onClick={() => navigate("/artists")}
           style={{ marginBottom: "16px" }}
@@ -57,33 +60,27 @@ const CreateArtist = () => {
         }}
       >
         <Form.Item
-          name="name"
-          label="Name"
-          rules={[{ required: true, message: "Please enter the artist name!" }]}
+          name="title"
+          label="Title"
+          rules={[{ required: true, message: "Please enter the title!" }]}
         >
           <Input />
-        </Form.Item>
-        <Form.Item name="dob" label="Date of Birth">
-          <DatePicker />
-        </Form.Item>
-        <Form.Item name="gender" label="Gender">
-          <Select>
-            <Option value="male">Male</Option>
-            <Option value="female">Female</Option>
-            <Option value="other">Other</Option>
-          </Select>
-        </Form.Item>
-        <Form.Item name="address" label="Address">
-          <Input />
-        </Form.Item>
-        <Form.Item name="first_release_year" label="First Release Year">
-          <InputNumber min={1900} max={new Date().getFullYear()} />
         </Form.Item>
         <Form.Item
-          name="no_of_albums_released"
-          label="Number of Albums Released"
+          name="album_name"
+          label="Album Name"
+          rules={[{ required: true, message: "Please enter the album name!" }]}
         >
-          <InputNumber min={0} />
+          <Input />
+        </Form.Item>
+        <Form.Item name="genre" label="Genre">
+          <Select>
+            <Option value="rnb">RNB</Option>
+            <Option value="country">Country</Option>
+            <Option value="classic">Classic</Option>
+            <Option value="rock">Rock</Option>
+            <Option value="jazz">Jazz</Option>
+          </Select>
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit">
@@ -95,4 +92,4 @@ const CreateArtist = () => {
   );
 };
 
-export default CreateArtist;
+export default CreateSong;

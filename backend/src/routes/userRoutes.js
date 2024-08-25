@@ -6,6 +6,7 @@ const {
   getUserById,
   updateUser,
   deleteUser,
+  getRoles,
 } = require("../controllers/userController");
 
 const router = express.Router();
@@ -19,5 +20,6 @@ router.get("/", checkRole(["super_admin", "admin"]), getAllUsers);
 router.get("/:id", checkRole(["super_admin", "admin"]), getUserById);
 router.put("/:id", checkRole(["super_admin", "admin"]), updateUser);
 router.delete("/:id", checkRole(["super_admin", "admin"]), deleteUser);
+router.get("/all/roles", getRoles);
 
 module.exports = router;

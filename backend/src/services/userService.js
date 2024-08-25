@@ -1,4 +1,6 @@
 const db = require("../config/db");
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
 
 /**
  * Create a new user
@@ -15,6 +17,7 @@ const createUser = async (userData) => {
     address,
     role_id,
   } = userData;
+  const hashedPassword = await bcrypt.hash(password, saltRounds);
   const query = `
     INSERT INTO user (first_name, last_name, email, password, phone, dob, gender, address, role_id)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -27,7 +30,7 @@ const createUser = async (userData) => {
         first_name,
         last_name,
         email,
-        password,
+        hashedPassword,
         phone,
         dob,
         gender,
@@ -50,6 +53,18 @@ const getAllUsers = async () => {
     const [results] = await db.promise().query(query);
     return results;
   } catch (err) {
+    throw new Error(err.message);
+  }
+};
+const getRoles = async () => {
+  const query = "SELECT * FROM roles";
+
+  try {
+    const [results] = await db.promise().query(query);
+    console.log(results, "hey ohh");
+    return results;
+  } catch (err) {
+    console.log(err);
     throw new Error(err.message);
   }
 };
@@ -139,4 +154,5 @@ module.exports = {
   getUserById,
   updateUser,
   deleteUser,
+  getRoles,
 };

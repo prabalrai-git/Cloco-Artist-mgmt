@@ -34,8 +34,12 @@ const checkRole = (roles) => {
 
     const [results] = await db
       .promise()
-      .query("SELECT * from roles WHERE id = ?", [decoded.id]);
-    const userRole = results[0]?.role;
+      .query("SELECT * from user WHERE id = ?", [decoded.id]);
+    const role_id = results[0].role_id;
+    const [roleObj] = await db
+      .promise()
+      .query("SELECT * from roles where id = ?", [role_id]);
+    const userRole = roleObj[0].role;
     if (!roles.includes(userRole)) {
       return res.status(403).json({
         message: "You do not have permissions to perform this action",

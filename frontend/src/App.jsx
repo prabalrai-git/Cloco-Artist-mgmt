@@ -10,6 +10,7 @@ import "antd/dist/reset.css";
 import CreateUser from "./pages/CreateUser";
 import CreateArtist from "./pages/CreateArtist";
 import Music from "./pages/Music";
+import CreateSong from "./pages/CreateSong";
 
 function App() {
   return (
@@ -27,7 +28,8 @@ function App() {
           <Route path="/users/create" element={<CreateUser />} />
           <Route path="/artists" element={<Artists />} />
           <Route path="/artists/create" element={<CreateArtist />} />
-          <Route path="/music/:artistId" element={<Music />} />
+          <Route path="/music" element={<Music />} />
+          <Route path="/music/create" element={<CreateSong />} />
         </Route>
 
         {/* 404 Not Found */}

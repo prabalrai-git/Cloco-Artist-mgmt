@@ -1,12 +1,18 @@
 import React from "react";
-import { Button, Table } from "antd";
-import { dummyArtists } from "../data/dummyData";
+import { Button, message, Table } from "antd";
 import { Link, useNavigate } from "react-router-dom";
+import { deleteArtist, getArtistList } from "../api/artistServices";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const Artist = () => {
   const columns = [
     { title: "Name", dataIndex: "name", key: "name" },
-    { title: "DOB", dataIndex: "dob", key: "dob" },
+    {
+      title: "DOB",
+      dataIndex: "dob",
+      key: "dob",
+      render: (text, record) => <p>{text.split("T")[0]}</p>,
+    },
     { title: "Gender", dataIndex: "gender", key: "gender" },
     { title: "Address", dataIndex: "address", key: "address" },
     {
@@ -19,19 +25,47 @@ const Artist = () => {
       dataIndex: "no_of_albums_released",
       key: "no_of_albums_released",
     },
-    // { title: "Created At", dataIndex: "created_at", key: "created_at" },
-    // { title: "Updated At", dataIndex: "updated_at", key: "updated_at" },
     {
       title: "Actions",
       key: "actions",
       render: (text, record) => (
-        <Button type="primary">
-          <Link to={`/music/${record.id}`}>View Songs</Link>
-        </Button>
+        <div className="flex gap-5">
+          <Button type="primary">
+            <Link to={`/music?artist_id=${record.id}&name=${record.name}`}>
+              View Songs
+            </Link>
+          </Button>
+          <Button>Edit</Button>
+          <Button onClick={() => onDelete(record.id)} danger>
+            Delete
+          </Button>
+        </div>
       ),
     },
   ];
+
+  const queryClient = useQueryClient();
+
+  const { mutate } = useMutation({
+    mutationFn: (id) => deleteArtist(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries("artists");
+      message.success("Artist deleted successfully.");
+    },
+    onError: (err) => {
+      message.error(err.message ? err.message : "Error deleting artists");
+    },
+  });
+
+  const onDelete = (id) => {
+    mutate(id);
+  };
   const navigate = useNavigate();
+
+  const { data, error } = useQuery({
+    queryKey: ["artists"],
+    queryFn: getArtistList,
+  });
 
   return (
     <div>
@@ -47,7 +81,7 @@ const Artist = () => {
       </div>
       <Table
         columns={columns}
-        dataSource={dummyArtists}
+        dataSource={data?.artists}
         rowKey={(record) => record.id} // Use a unique key for each row
       />
     </div>

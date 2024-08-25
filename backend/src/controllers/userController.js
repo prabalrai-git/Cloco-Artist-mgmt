@@ -66,10 +66,21 @@ const deleteUser = async (req, res) => {
   }
 };
 
+const getRoles = async (req, res) => {
+  console.log("didnt hit");
+  try {
+    const roles = await userService.getRoles();
+    res.status(200).json({ roles });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   createUser,
   getAllUsers,
   getUserById,
   updateUser,
   deleteUser,
+  getRoles,
 };
