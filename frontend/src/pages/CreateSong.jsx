@@ -1,17 +1,8 @@
-import React from "react";
-import {
-  Form,
-  Input,
-  Button,
-  DatePicker,
-  Select,
-  InputNumber,
-  message,
-} from "antd";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Form, Input, Button, Select, message } from "antd";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { addArtist } from "../api/artistServices";
-import { addMusic } from "../api/musicServices";
+import { addMusic, updateMusic } from "../api/musicServices";
+import { useEffect } from "react";
 
 const { Option } = Select;
 
@@ -21,38 +12,68 @@ const CreateSong = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
+  const location = useLocation();
+
+  const toEditData = location.state;
+  console.log(toEditData);
+  const [form] = Form.useForm();
+
   const { mutate } = useMutation({
     mutationFn: addMusic,
     onSuccess: () => {
       queryClient.invalidateQueries("songs");
       message.success("Song added successfully.");
-      navigate("/artists");
+      history.back();
     },
     onError: (err) => {
       message.error(err.message ? err.message : "Error adding song");
     },
   });
 
+  const { mutate: updateMutate } = useMutation({
+    mutationFn: ({ id, data }) => updateMusic(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries("songs");
+      message.success("Song updated successfully.");
+      history.back();
+    },
+    onError: (err) => {
+      message.error(err.message ? err.message : "Error updating song");
+    },
+  });
+  useEffect(() => {
+    if (toEditData) {
+      form.setFieldsValue({
+        ...toEditData, // Spread toEditData to match form fields
+      });
+    }
+  }, [toEditData, form]);
+
   const onFinish = (values) => {
-    const dataToPost = {
-      ...values,
-      artist_id: params.get("artist_id"),
-    };
-    mutate(dataToPost);
+    if (toEditData) {
+      // Pass id and data as a single object
+      updateMutate({
+        id: toEditData?.id,
+        data: { ...values, artist_id: toEditData?.artist_id },
+      });
+    } else {
+      mutate({
+        ...values,
+        artist_id: params.get("artist_id"),
+      });
+    }
   };
 
   return (
     <div>
       <div className="flex justify-between items-center">
-        <h1>Add a song</h1>
-        <Button
-          onClick={() => navigate("/artists")}
-          style={{ marginBottom: "16px" }}
-        >
+        <h1>{toEditData ? "Edit song" : "Add a song"}</h1>
+        <Button onClick={() => history.back()} style={{ marginBottom: "16px" }}>
           Back
         </Button>
       </div>
       <Form
+        form={form}
         layout="vertical"
         onFinish={onFinish}
         initialValues={{
@@ -84,7 +105,7 @@ const CreateSong = () => {
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit">
-            Submit
+            {toEditData ? "Edit Song" : "Submit"}
           </Button>
         </Form.Item>
       </Form>

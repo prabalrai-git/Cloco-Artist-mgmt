@@ -1,15 +1,15 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Layout, Menu, Button, theme } from "antd";
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  UploadOutlined,
   UserOutlined,
   VideoCameraOutlined,
 } from "@ant-design/icons";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../slices/authSlice";
+import usePermissions from "../hooks/usePermissions";
 
 const { Header, Sider, Content } = Layout;
 
@@ -25,6 +25,25 @@ const SidebarLayout = () => {
   const dispatch = useDispatch();
 
   const navigate = useNavigate();
+
+  const user = useSelector((state) => state.auth.user);
+
+  const permissions = usePermissions(user.role.role);
+
+  const menuItems = [
+    {
+      key: "/artists",
+      icon: <VideoCameraOutlined />,
+      label: <Link to="/artists">Artists</Link>,
+      visible: permissions.artist.Read,
+    },
+    {
+      key: "/",
+      icon: <UserOutlined />,
+      label: <Link to="/">Users</Link>,
+      visible: permissions.user.Read,
+    },
+  ].filter((item) => item.visible); // Filter out items that are not visible
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
@@ -43,18 +62,7 @@ const SidebarLayout = () => {
           theme="dark"
           mode="inline"
           selectedKeys={[selectedKey]}
-          items={[
-            {
-              key: "/",
-              icon: <UserOutlined />,
-              label: <Link to="/">Users</Link>,
-            },
-            {
-              key: "/artists",
-              icon: <VideoCameraOutlined />,
-              label: <Link to="/artists">Artists</Link>,
-            },
-          ]}
+          items={menuItems}
         />
       </Sider>
       <Layout>
@@ -75,16 +83,24 @@ const SidebarLayout = () => {
               height: 64,
             }}
           />
-          <Button
-            danger
-            className="  flex justify-center items-center px-10 mr-10 rounded-sm 0"
-            onClick={() => {
-              dispatch(logout());
-              navigate("/login");
-            }}
-          >
-            Logout
-          </Button>
+          <div className="flex items-center gap-10 ">
+            <p>
+              Howdy!{" "}
+              <span className="font-semibold">
+                {user?.first_name} {user?.last_name}
+              </span>
+            </p>
+            <Button
+              danger
+              className="  flex justify-center items-center px-10 mr-10 rounded-sm 0"
+              onClick={() => {
+                dispatch(logout());
+                navigate("/login");
+              }}
+            >
+              Logout
+            </Button>
+          </div>
         </Header>
         <Content
           style={{

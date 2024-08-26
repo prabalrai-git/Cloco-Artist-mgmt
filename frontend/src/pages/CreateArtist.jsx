@@ -1,4 +1,4 @@
-import React from "react";
+import { useEffect } from "react";
 import {
   Form,
   Input,
@@ -8,15 +8,20 @@ import {
   InputNumber,
   message,
 } from "antd";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { addArtist } from "../api/artistServices";
+import { addArtist, updateArtist } from "../api/artistServices";
+import moment from "moment";
 
 const { Option } = Select;
 
 const CreateArtist = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const location = useLocation();
+
+  const toEditData = location.state;
+  const [form] = Form.useForm();
 
   const { mutate } = useMutation({
     mutationFn: addArtist,
@@ -29,19 +34,43 @@ const CreateArtist = () => {
       message.error(err.message ? err.message : "Error creating artist");
     },
   });
+  const { mutate: updateMutate } = useMutation({
+    mutationFn: ({ id, data }) => updateArtist(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries("users");
+      message.success("Artist updated successfully.");
+      navigate("/artists");
+    },
+    onError: (err) => {
+      message.error(err.message ? err.message : "Error updating artist");
+    },
+  });
+  useEffect(() => {
+    if (toEditData) {
+      form.setFieldsValue({
+        ...toEditData,
+        dob: moment(toEditData.dob), // Convert date string to moment object
+      });
+    }
+  }, [toEditData, form]);
 
   const onFinish = (values) => {
     const dataToPost = {
       ...values,
       dob: values.dob.toISOString().split("T")[0],
     };
-    mutate(dataToPost);
-  };
 
+    if (toEditData) {
+      // Pass id and data as a single object
+      updateMutate({ id: toEditData?.id, data: dataToPost });
+    } else {
+      mutate(dataToPost);
+    }
+  };
   return (
     <div>
       <div className="flex justify-between items-center">
-        <h1>Create New Artist</h1>
+        <h1>{toEditData ? "Edit Artist" : "Create New Artist"}</h1>
         <Button
           onClick={() => navigate("/artists")}
           style={{ marginBottom: "16px" }}
@@ -50,6 +79,7 @@ const CreateArtist = () => {
         </Button>
       </div>
       <Form
+        form={form}
         layout="vertical"
         onFinish={onFinish}
         initialValues={{
@@ -87,7 +117,7 @@ const CreateArtist = () => {
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit">
-            Submit
+            {toEditData ? "Edit Artist" : "Submit"}
           </Button>
         </Form.Item>
       </Form>

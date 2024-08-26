@@ -36,6 +36,24 @@ export const getMusicListByArtistId = async (id) => {
   }
 };
 
+export const updateMusic = async (id, data) => {
+  try {
+    const response = await axiosInstance.put(`music/${id}`, data);
+    // Check for an error status in the response and throw an error if necessary
+    if (response.data.errors) {
+      throw new Error(response.data.message || "Song update failed.");
+    }
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const errorMessage = error.response.data.message;
+      throw new Error(errorMessage); // This will trigger onError
+    } else {
+      throw error; // Rethrow if it's another kind of error
+    }
+  }
+};
+
 export const deleteMusic = async (id) => {
   try {
     const response = await axiosInstance.delete(`music/${id}`);

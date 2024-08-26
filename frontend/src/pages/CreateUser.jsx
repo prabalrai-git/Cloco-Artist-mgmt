@@ -1,16 +1,21 @@
-import React from "react";
 import { Form, Input, Button, DatePicker, Select, message } from "antd";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { addUser, getRolesList } from "../api/userServices";
+import { addUser, getRolesList, updateUser } from "../api/userServices";
+import { useEffect } from "react";
+import moment from "moment";
 
 const { Option } = Select;
 
 const CreateUser = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const location = useLocation();
 
-  const { data, error } = useQuery({
+  const toEditData = location.state;
+  const [form] = Form.useForm();
+
+  const { data } = useQuery({
     queryKey: ["roles"],
     queryFn: getRolesList,
   });
@@ -26,24 +31,51 @@ const CreateUser = () => {
       message.error(err.message ? err.message : "Error creating user");
     },
   });
+  const { mutate: updateMutate } = useMutation({
+    mutationFn: ({ id, data }) => updateUser(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries("users");
+      message.success("User updated successfully.");
+      navigate("/");
+    },
+    onError: (err) => {
+      message.error(err.message ? err.message : "Error updating user");
+    },
+  });
+  useEffect(() => {
+    if (toEditData) {
+      // If toEditData is present, set form values
+      const { password, ...fields } = toEditData;
+      form.setFieldsValue({
+        ...fields,
+        dob: moment(toEditData.dob), // Convert date string to moment object
+      });
+    }
+  }, [toEditData, form]);
 
   const onFinish = (values) => {
     const dataToPost = {
       ...values,
       dob: values.dob.toISOString().split("T")[0],
     };
-    mutate(dataToPost);
-  };
 
+    if (toEditData) {
+      // Pass id and data as a single object
+      updateMutate({ id: toEditData?.id, data: dataToPost });
+    } else {
+      mutate(dataToPost);
+    }
+  };
   return (
     <div>
       <div className="flex justify-between items-center">
-        <h1>Create New User</h1>
+        <h1>{toEditData ? "Update User" : "Create New User"}</h1>
         <Button onClick={() => navigate("/")} style={{ marginBottom: "16px" }}>
           Back
         </Button>
       </div>
       <Form
+        form={form}
         layout="vertical"
         onFinish={onFinish}
         initialValues={{
@@ -157,7 +189,7 @@ const CreateUser = () => {
 
         <Form.Item>
           <Button type="primary" htmlType="submit">
-            Submit
+            {toEditData ? "Edit User" : "Submit"}
           </Button>
         </Form.Item>
       </Form>

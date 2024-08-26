@@ -1,5 +1,4 @@
-import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Users from "./pages/User";
@@ -38,6 +37,22 @@ function App() {
           element={
             <div className="flex justify-center items-center min-h-screen w-100">
               <h1 className="text-red-white">404 page not found!</h1>
+            </div>
+          }
+        />
+        <Route
+          path="not-permitted"
+          element={
+            <div className="flex justify-center flex-col gap-10 items-center min-h-screen w-100">
+              <h1 className="text-red-white">
+                Sorry, You do not have the permissions!
+              </h1>
+              <button
+                className="bg-green-600 px-10 py-3 rounded-md hover:bg-green-700 text-white"
+                onClick={() => history.back()}
+              >
+                Go Back
+              </button>
             </div>
           }
         />

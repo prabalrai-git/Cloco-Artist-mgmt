@@ -36,12 +36,34 @@ export const getRolesList = async () => {
   }
 };
 
-export const getUsersList = async () => {
+export const getUsersList = async (page = 1, pageSize = 10) => {
   try {
-    const response = await axiosInstance.get("user/");
-    // Check for an error status in the response and throw an error if necessary
+    const response = await axiosInstance.get("user/", {
+      params: {
+        page,
+        pageSize,
+      },
+    });
     if (response.data.errors) {
       throw new Error(response.data.message || "Failed to fetch users.");
+    }
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      const errorMessage = error.response.data.message;
+      throw new Error(errorMessage);
+    } else {
+      throw error;
+    }
+  }
+};
+
+export const updateUser = async (id, data) => {
+  try {
+    const response = await axiosInstance.put(`user/${id}`, data);
+    // Check for an error status in the response and throw an error if necessary
+    if (response.data.errors) {
+      throw new Error(response.data.message || "User update failed.");
     }
     return response.data;
   } catch (error) {

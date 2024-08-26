@@ -1,5 +1,4 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { useDispatch } from "react-redux";
 import { Form, Input, Button, Typography, notification } from "antd";
@@ -12,11 +11,11 @@ const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { mutate, isLoading, isError } = useMutation({
+  const { mutate, isLoading } = useMutation({
     mutationFn: loginUser,
     onSuccess: (data) => {
       dispatch(setUser({ user: data.user, token: data.token }));
-      navigate("/"); // Redirect to home page on successful login
+      navigate("/artists"); // Redirect to home page on successful login
     },
     onError: (error) => {
       notification.error({
@@ -32,8 +31,12 @@ const Login = () => {
 
   return (
     <div
-      className="login-container"
-      style={{ padding: "24px", maxWidth: "400px", margin: "0 auto" }}
+      className="login-container min-h-screen flex flex-col justify-center "
+      style={{
+        padding: "24px",
+        maxWidth: "400px",
+        margin: "auto auto",
+      }}
     >
       <Title level={2}>Login</Title>
       <Form onFinish={handleFinish} layout="vertical">
@@ -49,15 +52,20 @@ const Login = () => {
         >
           <Input.Password placeholder="Password" />
         </Form.Item>
+        <div className="flex justify-end my-5 underline">
+          <Link to={"/register"}>Register Here</Link>
+        </div>
         <Form.Item>
-          <Button type="primary" htmlType="submit" loading={isLoading}>
+          <Button
+            className="w-full"
+            type="primary"
+            htmlType="submit"
+            loading={isLoading}
+          >
             Login
           </Button>
         </Form.Item>
       </Form>
-      {isError && (
-        <p style={{ color: "red" }}>Login failed. Please try again.</p>
-      )}
     </div>
   );
 };
