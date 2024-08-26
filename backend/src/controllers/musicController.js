@@ -86,6 +86,18 @@ const deleteMusic = async (req, res) => {
     res.status(404).json({ message: error.message });
   }
 };
+const deleteMusicByArtistId = async (req, res) => {
+  const artist_id = req.params.artist_id;
+
+  try {
+    const result = await musicService.deleteMusicByArtistId(artist_id);
+    res
+      .status(200)
+      .json({ message: "Music record deleted successfully", result });
+  } catch (error) {
+    res.status(404).json({ message: error.message });
+  }
+};
 
 module.exports = {
   createMusic,
@@ -94,4 +106,5 @@ module.exports = {
   getMusicById,
   updateMusic,
   deleteMusic,
+  deleteMusicByArtistId,
 };

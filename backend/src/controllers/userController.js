@@ -17,8 +17,25 @@ const createUser = async (req, res) => {
  */
 const getAllUsers = async (req, res) => {
   try {
-    const users = await userService.getAllUsers();
-    res.status(200).json({ users });
+    // Extract pagination parameters from query parameters
+    const page = parseInt(req.query.page, 10) || 1; // Default to page 1 if not provided
+    const pageSize = parseInt(req.query.pageSize, 10) || 10; // Default to 10 if not provided
+
+    // Call the service with pagination parameters
+    const { users, totalCount } = await userService.getAllUsers(page, pageSize);
+
+    // Calculate total pages
+    const totalPages = Math.ceil(totalCount / pageSize);
+    // Respond with paginated data
+    res.status(200).json({
+      users,
+      pagination: {
+        totalCount,
+        totalPages,
+        currentPage: page,
+        pageSize,
+      },
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -67,7 +84,6 @@ const deleteUser = async (req, res) => {
 };
 
 const getRoles = async (req, res) => {
-  console.log("didnt hit");
   try {
     const roles = await userService.getRoles();
     res.status(200).json({ roles });

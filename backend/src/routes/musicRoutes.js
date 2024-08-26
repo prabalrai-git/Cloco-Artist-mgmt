@@ -16,7 +16,7 @@ router.get(
 );
 router.get(
   "/artist/:artistId",
-  checkRole(["super_admin", "artist_manager", "admin"]),
+  checkRole(["super_admin", "artist_manager", "admin", "artist"]),
   musicController.getMusicByArtistId
 ); // New route
 router.get(
@@ -29,6 +29,11 @@ router.delete(
   "/:id",
   checkRole(["artist", "admin"]),
   musicController.deleteMusic
+);
+router.delete(
+  "/artist-songs/:artist_id",
+  checkRole(["artist", "admin"]),
+  musicController.deleteMusicByArtistId
 );
 
 module.exports = router;

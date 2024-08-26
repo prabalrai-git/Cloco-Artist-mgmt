@@ -106,6 +106,19 @@ const deleteMusic = async (musicId) => {
   }
 };
 
+const deleteMusicByArtistId = async (artistId) => {
+  const query = "DELETE FROM music WHERE artist_id=?";
+  try {
+    const [result] = await db.promise().query(query, [artistId]);
+    if (result.affectedRows === 0) {
+      throw new Error("Music record not found");
+    }
+    return result;
+  } catch (err) {
+    throw new Error(err.message);
+  }
+};
+
 module.exports = {
   createMusic,
   getAllMusic,
@@ -113,4 +126,5 @@ module.exports = {
   getMusicByArtistId,
   updateMusic,
   deleteMusic,
+  deleteMusicByArtistId,
 };

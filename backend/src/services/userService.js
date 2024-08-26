@@ -46,16 +46,29 @@ const createUser = async (userData) => {
 /**
  * Get all users
  */
-const getAllUsers = async () => {
-  const query = "SELECT * FROM user";
+const getAllUsers = async (page = 1, pageSize = 10) => {
+  const offset = (page - 1) * pageSize;
+
+  const query = `
+    SELECT u.id, u.first_name, u.last_name, u.email, u.phone, u.dob, u.gender, u.address, u.created_at, u.updated_at, r.role
+    FROM user u
+    LEFT JOIN roles r ON u.role_id = r.id
+    LIMIT ? OFFSET ?
+  `;
+
+  const countQuery = `SELECT COUNT(*) as count FROM user`;
 
   try {
-    const [results] = await db.promise().query(query);
-    return results;
+    const [results] = await db.promise().query(query, [pageSize, offset]);
+
+    const [[{ count }]] = await db.promise().query(countQuery);
+
+    return { users: results, totalCount: count };
   } catch (err) {
     throw new Error(err.message);
   }
 };
+
 const getRoles = async () => {
   const query = "SELECT * FROM roles";
 
@@ -106,6 +119,7 @@ const updateUser = async (userId, userData) => {
     SET first_name = ?, last_name = ?, email = ?, password = ?, phone = ?, dob = ?, gender = ?, address = ?, role_id = ?
     WHERE id = ?
   `;
+  const hashedPassword = await bcrypt.hash(password, saltRounds);
 
   try {
     const [result] = await db
@@ -114,7 +128,7 @@ const updateUser = async (userId, userData) => {
         first_name,
         last_name,
         email,
-        password,
+        hashedPassword,
         phone,
         dob,
         gender,

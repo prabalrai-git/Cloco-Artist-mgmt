@@ -59,6 +59,7 @@ const loginUser = async (credentials) => {
   const { email, password } = credentials;
 
   const query = "SELECT * FROM user WHERE email = ?";
+  const roleQuery = "SELECT * FROM roles WHERE id = ?";
 
   try {
     const [results] = await db.promise().query(query, [email]);
@@ -74,8 +75,9 @@ const loginUser = async (credentials) => {
       throw new Error("Invalid password");
     }
 
+    const [roleResults] = await db.promise().query(roleQuery, [user.role_id]);
     const token = jwt.sign({ id: user.id }, jwtSecret);
-    return { token, user };
+    return { token, user: { ...user, role: roleResults[0] } };
   } catch (err) {
     throw new Error(err.message);
   }

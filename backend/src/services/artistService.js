@@ -37,14 +37,28 @@ const createArtist = async (artistData) => {
 /**
  * Get all artists
  */
-const getAllArtists = async () => {
-  const query = "SELECT * FROM artist";
+const getAllArtists = async (page = 1, pageSize = 10) => {
+  // Calculate offset based on the current page and page size
+  const offset = (page - 1) * pageSize;
+
+  console.log(page, pageSize, offset, "heyy yaaa");
+
+  // Define SQL queries
+  const query = "SELECT * FROM artist LIMIT ? OFFSET ?";
+  const countQuery = "SELECT COUNT(*) as count FROM artist";
 
   try {
-    const [results] = await db.promise().query(query);
-    return results;
+    // Execute query to get paginated results
+    const [results] = await db.promise().query(query, [pageSize, offset]);
+
+    // Execute query to get total count of artists
+    const [[{ count }]] = await db.promise().query(countQuery);
+
+    // Return results with pagination metadata
+    return { artists: results, totalCount: count };
   } catch (err) {
-    throw new Error(err.message);
+    // Handle and throw error with detailed message
+    throw new Error(`Error fetching artists: ${err.message}`);
   }
 };
 

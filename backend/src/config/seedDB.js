@@ -32,7 +32,7 @@ connection.query(createDbQuery, (err, results) => {
     const createRolesTableQuery = `
       CREATE TABLE IF NOT EXISTS roles (
         id INT AUTO_INCREMENT PRIMARY KEY,
-        role ENUM('super_admin', 'artist_manager', 'artist',"admin") NOT NULL
+        role ENUM("admin",'super_admin', 'artist_manager', 'artist') NOT NULL
       )
     `;
 

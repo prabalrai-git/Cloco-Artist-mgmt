@@ -15,10 +15,27 @@ const createArtist = async (req, res) => {
 /**
  * Get all artists
  */
+// Call the service with pagination parameters
+
 const getAllArtists = async (req, res) => {
+  const page = parseInt(req.query.page, 10) || 1; // Default to page 1 if not provided
+  const pageSize = parseInt(req.query.pageSize, 10) || 10; // Default to 10 if not provided
+
   try {
-    const artists = await artistService.getAllArtists();
-    res.status(200).json({ artists });
+    const { artists, totalCount } = await artistService.getAllArtists(
+      page,
+      pageSize
+    );
+    const totalPages = Math.ceil(totalCount / pageSize);
+    res.status(200).json({
+      artists,
+      pagination: {
+        totalCount,
+        totalPages,
+        currentPage: page,
+        pageSize,
+      },
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
