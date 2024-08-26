@@ -35,7 +35,7 @@ const checkRole = (roles) => {
     const [results] = await db
       .promise()
       .query("SELECT * from user WHERE id = ?", [decoded.id]);
-    const role_id = results[0].role_id;
+    const role_id = results[0] && results[0].role_id;
     const [roleObj] = await db
       .promise()
       .query("SELECT * from roles where id = ?", [role_id]);

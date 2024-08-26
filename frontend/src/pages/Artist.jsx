@@ -171,9 +171,9 @@ const Artist = () => {
 
   return (
     <div>
-      <div className="flex flex-row  w-full  xsm:flex-col md:flex-row lg:flex-row   gap-5 items-stretch">
+      <div className="flex flex-row  gap-5  justify-between">
         <h1>Artists</h1>
-        <div className="flex flex-col gap-4 sm:flex-col md:flex-row sm:w-full mb-6 ">
+        <div className="flex  gap-4  mb-6 ">
           {permissions.artist.Create && (
             <Button
               onClick={() => navigate("/artists/create")}

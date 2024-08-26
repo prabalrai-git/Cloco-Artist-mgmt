@@ -2,12 +2,15 @@ import { Form, Input, Button, DatePicker, Select, message } from "antd";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { addUser, getRolesList, updateUser } from "../api/userServices";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import moment from "moment";
+import { getArtistList } from "../api/artistServices";
 
 const { Option } = Select;
 
 const CreateUser = () => {
+  const [isArtist, setIsArtist] = useState(false);
+
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const location = useLocation();
@@ -18,6 +21,10 @@ const CreateUser = () => {
   const { data } = useQuery({
     queryKey: ["roles"],
     queryFn: getRolesList,
+  });
+  const { data: artistsList } = useQuery({
+    queryKey: ["artists", isArtist],
+    queryFn: getArtistList,
   });
 
   const { mutate } = useMutation({
@@ -66,6 +73,7 @@ const CreateUser = () => {
       mutate(dataToPost);
     }
   };
+
   return (
     <div>
       <div className="flex justify-between items-center">
@@ -176,7 +184,15 @@ const CreateUser = () => {
           label="Role"
           rules={[{ required: true, message: "Please enter the role!" }]}
         >
-          <Select>
+          <Select
+            onChange={(text, record) => {
+              if (record.children.toLowerCase() === "artist") {
+                setIsArtist(true);
+              } else {
+                setIsArtist(false);
+              }
+            }}
+          >
             {data?.roles?.map((item) => {
               return (
                 <Option value={item.id} className="uppercase">
@@ -186,6 +202,23 @@ const CreateUser = () => {
             })}
           </Select>
         </Form.Item>
+        {isArtist && (
+          <Form.Item
+            name="artist_id"
+            label="Artist"
+            rules={[{ required: true, message: "Please enter the artist!" }]}
+          >
+            <Select>
+              {artistsList?.artists?.map((item) => {
+                return (
+                  <Option value={item.id} className="uppercase">
+                    {item.name}
+                  </Option>
+                );
+              })}
+            </Select>
+          </Form.Item>
+        )}
 
         <Form.Item>
           <Button type="primary" htmlType="submit">

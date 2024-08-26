@@ -8,54 +8,35 @@ const connection = mysql.createConnection({
   password: process.env.DB_PASSWORD || "",
 });
 
-// SQL query to create the database
-const createDbQuery = `CREATE DATABASE IF NOT EXISTS ${process.env.DB_NAME}`;
+const executeQuery = async (query, connection) => {
+  return new Promise((resolve, reject) => {
+    connection.query(query, (err, results) => {
+      if (err) {
+        return reject(err);
+      }
+      resolve(results);
+    });
+  });
+};
 
-// Execute the query to create the database
-connection.query(createDbQuery, (err, results) => {
-  if (err) {
-    console.error("Error creating database:", err);
-    connection.end();
-    return;
-  }
-  console.log("Database created or already exists:", results);
+const setupDatabase = async () => {
+  try {
+    // Create the database
+    const createDbQuery = `CREATE DATABASE IF NOT EXISTS ${process.env.DB_NAME}`;
+    await executeQuery(createDbQuery, connection);
+    console.log("Database created or already exists.");
 
-  // Connect to the newly created database
-  connection.changeUser({ database: process.env.DB_NAME }, (err) => {
-    if (err) {
-      console.error("Error changing database:", err);
-      connection.end();
-      return;
-    }
+    // Change to the newly created database
+    await executeQuery(`USE ${process.env.DB_NAME}`, connection);
 
-    // SQL query to create the 'roles' table
+    // SQL queries to create tables
     const createRolesTableQuery = `
       CREATE TABLE IF NOT EXISTS roles (
         id INT AUTO_INCREMENT PRIMARY KEY,
-        role ENUM("admin",'super_admin', 'artist_manager', 'artist') NOT NULL
+        role ENUM("admin", "super_admin", "artist_manager", "artist") NOT NULL
       )
     `;
 
-    // SQL query to create the 'user' table
-    const createUserTableQuery = `
-      CREATE TABLE IF NOT EXISTS user (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        first_name VARCHAR(255) NOT NULL,
-        last_name VARCHAR(255) NOT NULL,
-        email VARCHAR(255) NOT NULL UNIQUE,
-        password VARCHAR(255) NOT NULL,
-        phone VARCHAR(20),
-        dob DATE,
-        gender ENUM('male', 'female', 'other'),
-        address TEXT,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        role_id INT,
-        FOREIGN KEY (role_id) REFERENCES roles(id)
-      )
-    `;
-
-    // SQL query to create the 'artist' table
     const createArtistTableQuery = `
       CREATE TABLE IF NOT EXISTS artist (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -70,7 +51,26 @@ connection.query(createDbQuery, (err, results) => {
       )
     `;
 
-    // SQL query to create the 'music' table
+    const createUserTableQuery = `
+      CREATE TABLE IF NOT EXISTS user (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        first_name VARCHAR(255) NOT NULL,
+        last_name VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL UNIQUE,
+        password VARCHAR(255) NOT NULL,
+        phone VARCHAR(20),
+        dob DATE,
+        gender ENUM('male', 'female', 'other'),
+        address TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        role_id INT,
+        artist_id INT,
+        FOREIGN KEY (role_id) REFERENCES roles(id),
+        FOREIGN KEY (artist_id) REFERENCES artist(id)
+      )
+    `;
+
     const createMusicTableQuery = `
       CREATE TABLE IF NOT EXISTS music (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -84,55 +84,32 @@ connection.query(createDbQuery, (err, results) => {
       )
     `;
 
-    // Execute the queries to create the tables
-    connection.query(createRolesTableQuery, (err, results) => {
-      if (err) {
-        console.error("Error creating roles table:", err);
-        connection.end();
-        return;
-      }
-      console.log("Roles table created or already exists:", results);
+    // Execute the table creation queries
+    await executeQuery(createRolesTableQuery, connection);
+    console.log("Roles table created or already exists.");
 
-      const insertRolesQuery = `
+    const insertRolesQuery = `
       INSERT IGNORE INTO roles (role)
-      VALUES ('super_admin'), ('artist_manager'), ('artist'),('admin')
+      VALUES ('super_admin'), ('artist_manager'), ('artist'), ('admin')
     `;
-      connection.query(insertRolesQuery, (err, results) => {
-        if (err) {
-          console.error("Error inserting roles:", err);
-          connection.end();
-          return;
-        }
-        console.log("Roles inserted into the roles table:", results);
+    await executeQuery(insertRolesQuery, connection);
+    console.log("Roles inserted into the roles table.");
 
-        connection.query(createUserTableQuery, (err, results) => {
-          if (err) {
-            console.error("Error creating user table:", err);
-            connection.end();
-            return;
-          }
-          console.log("User table created or already exists:", results);
+    await executeQuery(createArtistTableQuery, connection);
+    console.log("Artist table created or already exists.");
 
-          connection.query(createArtistTableQuery, (err, results) => {
-            if (err) {
-              console.error("Error creating artist table:", err);
-              connection.end();
-              return;
-            }
-            console.log("Artist table created or already exists:", results);
+    await executeQuery(createUserTableQuery, connection);
+    console.log("User table created or already exists.");
 
-            connection.query(createMusicTableQuery, (err, results) => {
-              if (err) {
-                console.error("Error creating music table:", err);
-              } else {
-                console.log("Music table created or already exists:", results);
-              }
-              // Close the connection
-              connection.end();
-            });
-          });
-        });
-      });
-    });
-  });
-});
+    await executeQuery(createMusicTableQuery, connection);
+    console.log("Music table created or already exists.");
+  } catch (err) {
+    console.error("Error setting up the database:", err);
+  } finally {
+    // Close the connection
+    connection.end();
+  }
+};
+
+// Call the setup function
+setupDatabase();

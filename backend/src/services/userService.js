@@ -16,11 +16,12 @@ const createUser = async (userData) => {
     gender,
     address,
     role_id,
+    artist_id,
   } = userData;
   const hashedPassword = await bcrypt.hash(password, saltRounds);
   const query = `
-    INSERT INTO user (first_name, last_name, email, password, phone, dob, gender, address, role_id)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO user (first_name, last_name, email, password, phone, dob, gender, address, role_id,artist_id)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)
   `;
 
   try {
@@ -36,6 +37,7 @@ const createUser = async (userData) => {
         gender,
         address,
         role_id,
+        artist_id,
       ]);
     return result;
   } catch (err) {
@@ -74,7 +76,6 @@ const getRoles = async () => {
 
   try {
     const [results] = await db.promise().query(query);
-    console.log(results, "hey ohh");
     return results;
   } catch (err) {
     console.log(err);

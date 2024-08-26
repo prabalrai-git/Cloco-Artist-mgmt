@@ -39,7 +39,7 @@ const User = () => {
       dataIndex: "role",
       key: "role",
       render: (text) => (
-        <Tag color="green" className="uppercase">
+        <Tag color="darkgreen" className="uppercase font-semibold">
           {text === "admin" ? "system_admin" : text}
         </Tag>
       ),

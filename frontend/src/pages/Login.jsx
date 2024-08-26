@@ -15,7 +15,11 @@ const Login = () => {
     mutationFn: loginUser,
     onSuccess: (data) => {
       dispatch(setUser({ user: data.user, token: data.token }));
-      navigate("/artists"); // Redirect to home page on successful login
+      !data.user.artist_id
+        ? navigate("/artists")
+        : navigate(
+            `/music?artist_id=${data.user.artist_id}&name=${data.user.first_name}`
+          ); // Redirect to home page on successful login
     },
     onError: (error) => {
       notification.error({

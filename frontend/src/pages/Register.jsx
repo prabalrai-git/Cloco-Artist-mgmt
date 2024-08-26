@@ -38,6 +38,7 @@ const Register = () => {
     const dataToPost = {
       ...values,
       dob: values.dob.toISOString().split("T")[0],
+      artist_id: null,
     };
     mutate(dataToPost);
   };

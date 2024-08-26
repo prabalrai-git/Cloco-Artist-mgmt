@@ -15,7 +15,6 @@ const CreateSong = () => {
   const location = useLocation();
 
   const toEditData = location.state;
-  console.log(toEditData);
   const [form] = Form.useForm();
 
   const { mutate } = useMutation({

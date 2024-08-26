@@ -18,7 +18,6 @@ const createMusic = async (req, res) => {
  * Get all music records
  */
 const getAllMusic = async (req, res) => {
-  console.log(req, "hey yo??");
   try {
     const music = await musicService.getAllMusic();
     res.status(200).json({ music });

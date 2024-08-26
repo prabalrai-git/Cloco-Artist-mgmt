@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Layout, Menu, Button, theme } from "antd";
+import { Layout, Menu, Button, theme, Tag } from "antd";
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -89,6 +89,19 @@ const SidebarLayout = () => {
               <span className="font-semibold">
                 {user?.first_name} {user?.last_name}
               </span>
+            </p>
+            <p className="md:block hidden">
+              <Tag
+                color="darkgreen"
+                className="px-4 py-1 font-semibold uppercase"
+              >
+                Role:{" "}
+                <span>
+                  {user?.role?.role.toLowerCase() === "admin"
+                    ? "System_admin"
+                    : user?.role?.role}
+                </span>
+              </Tag>
             </p>
             <Button
               danger

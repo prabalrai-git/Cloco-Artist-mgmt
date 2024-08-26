@@ -15,7 +15,7 @@ router.post(
 );
 router.get(
   "/",
-  checkRole(["super_admin", "artist_manager", "admin", "artist"]),
+  checkRole(["super_admin", "artist_manager", "admin"]),
   artistController.getAllArtists
 );
 router.get(

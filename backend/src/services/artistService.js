@@ -41,8 +41,6 @@ const getAllArtists = async (page = 1, pageSize = 10) => {
   // Calculate offset based on the current page and page size
   const offset = (page - 1) * pageSize;
 
-  console.log(page, pageSize, offset, "heyy yaaa");
-
   // Define SQL queries
   const query = "SELECT * FROM artist LIMIT ? OFFSET ?";
   const countQuery = "SELECT COUNT(*) as count FROM artist";

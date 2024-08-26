@@ -82,7 +82,7 @@ export const permissionsList = {
     },
     artist: {
       Create: false,
-      Read: true,
+      Read: false,
       Update: false,
       Delete: false,
     },
@@ -102,7 +102,7 @@ export const permissionsList = {
 export const routeRoles = {
   "/": ["admin", "super_admin"],
   "/users/create": ["admin", "super_admin"],
-  "/artists": ["admin", "super_admin", "artist_manager", "artist"],
+  "/artists": ["admin", "super_admin", "artist_manager"],
   "/artists/create": ["admin", "artist_manager"],
   "/music": ["admin", "super_admin", "artist_manager", "artist"],
   "/music/create": ["admin", "artist"],

@@ -6,7 +6,7 @@ import { message } from "antd";
 
 const ProtectedLayout = () => {
   const token = useSelector((state) => state.auth.token);
-  const userRole = useSelector((state) => state.auth.user.role.role);
+  const userRole = useSelector((state) => state.auth.user?.role?.role);
   const location = useLocation();
 
   if (!token) {
