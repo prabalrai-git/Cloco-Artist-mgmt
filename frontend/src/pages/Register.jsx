@@ -44,28 +44,33 @@ const Register = () => {
 
   return (
     <div
-      className="login-container"
-      style={{ padding: "24px", maxWidth: "600px", margin: "0 auto" }}
+      className="login-container flex flex-col justify-center h-screen
+     "
+      style={{ padding: "24px", margin: "0 30%" }}
     >
       <div className="flex justify-between">
         <Title level={2}>Register</Title>
         <Link to={"/login"}>Back</Link>
       </div>
       <Form onFinish={handleFinish} layout="vertical">
-        <Form.Item
-          name="first_name"
-          label="First Name"
-          rules={[{ required: true, message: "Please input your email!" }]}
-        >
-          <Input placeholder="First Name" />
-        </Form.Item>
-        <Form.Item
-          name="last_name"
-          label="Last Name"
-          rules={[{ required: true, message: "Please input your email!" }]}
-        >
-          <Input placeholder="Last Name" />
-        </Form.Item>
+        <div className="flex flex-row gap-8 ">
+          <Form.Item
+            className="flex-1"
+            name="first_name"
+            label="First Name"
+            rules={[{ required: true, message: "Please input your email!" }]}
+          >
+            <Input placeholder="First Name" />
+          </Form.Item>
+          <Form.Item
+            className="flex-1"
+            name="last_name"
+            label="Last Name"
+            rules={[{ required: true, message: "Please input your email!" }]}
+          >
+            <Input placeholder="Last Name" />
+          </Form.Item>
+        </div>
         <Form.Item
           name="email"
           label="Email"
@@ -73,72 +78,85 @@ const Register = () => {
         >
           <Input placeholder="Email" />
         </Form.Item>
-        <Form.Item
-          name="password"
-          label="Password"
-          rules={[{ required: true, message: "Please input your password!" }]}
-          hasFeedback
-        >
-          <Input.Password placeholder="Password" />
-        </Form.Item>
-        <Form.Item
-          label="Confirm Password"
-          name={"password_confirm"}
-          dependencies={["password"]}
-          hasFeedback
-          rules={[
-            {
-              required: true,
-              message: "Please confirm your password!",
-            },
-            ({ getFieldValue }) => ({
-              validator(_, value) {
-                if (!value || getFieldValue("password") === value) {
-                  return Promise.resolve();
-                }
-                return Promise.reject(
-                  new Error("The new password that you entered do not match!")
-                );
+        <div className="flex flex-row gap-8 ">
+          <Form.Item
+            name="password"
+            label="Password"
+            className="flex-1"
+            rules={[{ required: true, message: "Please input your password!" }]}
+            hasFeedback
+          >
+            <Input.Password placeholder="Password" />
+          </Form.Item>
+          <Form.Item
+            label="Confirm Password"
+            name={"password_confirm"}
+            className="flex-1"
+            dependencies={["password"]}
+            hasFeedback
+            rules={[
+              {
+                required: true,
+                message: "Please confirm your password!",
               },
-            }),
-          ]}
-        >
-          <Input.Password />
-        </Form.Item>
-        <Form.Item
-          name="address"
-          label="Address"
-          rules={[{ required: true, message: "Please enter the address!" }]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          name="phone"
-          label="Phone"
-          rules={[
-            { required: true, message: "Please enter the phone number!" },
-          ]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          name="dob"
-          label="Date of Birth"
-          rules={[{ required: true, message: "Please select DOB!" }]}
-        >
-          <DatePicker />
-        </Form.Item>
-        <Form.Item
-          name="gender"
-          label="Gender"
-          rules={[{ required: true, message: "Please enter the gender!" }]}
-        >
-          <Select>
-            <Option value="male">Male</Option>
-            <Option value="female">Female</Option>
-            <Option value="other">Other</Option>
-          </Select>
-        </Form.Item>
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue("password") === value) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(
+                    new Error("The new password that you entered do not match!")
+                  );
+                },
+              }),
+            ]}
+          >
+            <Input.Password />
+          </Form.Item>
+        </div>
+        <div className="flex flex-row gap-8 ">
+          <Form.Item
+            name="address"
+            label="Address"
+            className="flex-1"
+            rules={[{ required: true, message: "Please enter the address!" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="phone"
+            className="flex-1"
+            label="Phone"
+            rules={[
+              { required: true, message: "Please enter the phone number!" },
+            ]}
+          >
+            <Input />
+          </Form.Item>
+        </div>
+
+        <div className="flex flex-row gap-8 ">
+          <Form.Item
+            name="dob"
+            label="Date of Birth"
+            className="flex-1"
+            rules={[{ required: true, message: "Please select DOB!" }]}
+          >
+            <DatePicker />
+          </Form.Item>
+          <Form.Item
+            name="gender"
+            label="Gender"
+            className="flex-1"
+            rules={[{ required: true, message: "Please enter the gender!" }]}
+          >
+            <Select>
+              <Option value="male">Male</Option>
+              <Option value="female">Female</Option>
+              <Option value="other">Other</Option>
+            </Select>
+          </Form.Item>
+        </div>
 
         <Form.Item>
           <Button

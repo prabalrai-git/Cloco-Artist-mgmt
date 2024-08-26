@@ -84,7 +84,7 @@ const SidebarLayout = () => {
             }}
           />
           <div className="flex items-center gap-10 ">
-            <p>
+            <p className="md:block hidden">
               Howdy!{" "}
               <span className="font-semibold">
                 {user?.first_name} {user?.last_name}

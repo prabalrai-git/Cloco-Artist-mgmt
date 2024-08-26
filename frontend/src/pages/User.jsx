@@ -40,7 +40,7 @@ const User = () => {
       key: "role",
       render: (text) => (
         <Tag color="green" className="uppercase">
-          {text}
+          {text === "admin" ? "system_admin" : text}
         </Tag>
       ),
     },
@@ -109,7 +109,7 @@ const User = () => {
 
   return (
     <div>
-      <div className="flex justify-between items-center">
+      <div className=" flex flex-row xsm:flex-col md:flex-row  justify-between items-center  ">
         <h1>Users</h1>
         {permissions.user.Create && (
           <Button
@@ -123,6 +123,7 @@ const User = () => {
       </div>
       <Table
         columns={columns}
+        scroll={{ x: 400 }}
         dataSource={data?.users}
         rowKey={(record) => record.email} // Use a unique key for each row
         pagination={false} // Disable built-in pagination

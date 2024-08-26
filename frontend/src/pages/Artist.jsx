@@ -171,9 +171,9 @@ const Artist = () => {
 
   return (
     <div>
-      <div className="flex justify-between items-center">
-        <h1>Artist</h1>
-        <div className="flex flex-row gap-4">
+      <div className="flex flex-row  w-full  xsm:flex-col md:flex-row lg:flex-row   gap-5 items-stretch">
+        <h1>Artists</h1>
+        <div className="flex flex-col gap-4 sm:flex-col md:flex-row sm:w-full mb-6 ">
           {permissions.artist.Create && (
             <Button
               onClick={() => navigate("/artists/create")}
@@ -208,6 +208,7 @@ const Artist = () => {
       </div>
       <Table
         columns={columns}
+        scroll={{ x: 400 }}
         dataSource={data?.artists}
         rowKey={(record) => record.id} // Use a unique key for each row
         pagination={false} // Disable built-in pagination

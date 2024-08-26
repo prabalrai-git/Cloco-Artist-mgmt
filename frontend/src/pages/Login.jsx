@@ -26,7 +26,7 @@ const Login = () => {
   });
 
   const handleFinish = (values) => {
-    mutate({ email: values.email, password: values.password });
+    mutate({ email: values.email.trim(), password: values.password.trim() });
   };
 
   return (
