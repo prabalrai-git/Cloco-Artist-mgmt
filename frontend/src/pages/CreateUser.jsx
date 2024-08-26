@@ -196,7 +196,9 @@ const CreateUser = () => {
             {data?.roles?.map((item) => {
               return (
                 <Option value={item.id} className="uppercase">
-                  {item.role}
+                  {item.role.toLowerCase() === "admin"
+                    ? "System Admin"
+                    : item.role}
                 </Option>
               );
             })}

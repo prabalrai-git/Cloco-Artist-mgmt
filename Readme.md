@@ -1,3 +1,7 @@
+## .env Setup Instructions
+
+1. The .env.example has the content; so create .env file in each directory i.e frontend & backend and past the content
+
 # To Run Backend Project
 
 ## System Requirements
@@ -35,7 +39,3 @@
 
 3. Run the server:
    -> npm run dev
-
-## .env Setup Instructions
-
-1. The .env.example has the content; so create .env file in each directory i.e frontend & backend and past the content
