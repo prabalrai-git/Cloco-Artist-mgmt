@@ -6,7 +6,7 @@
 
 ## System Requirements
 
-1. Node.js installed
+1. Node.js and npm installed
 2. MySQL server running
 
 ## Setup Instructions
@@ -27,7 +27,7 @@
 
 ## System Requirements
 
-1. Node.js installed
+1. Node.js and npm installed
 
 ## Setup Instructions
 
