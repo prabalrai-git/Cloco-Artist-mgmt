@@ -1,6 +1,6 @@
 ## .env Setup Instructions
 
-1. The .env.example has the content; so create .env file in each directory i.e frontend & backend and past the content
+1. The .env.example in each directory has the key-value; so create .env file in each directory i.e frontend & backend and paste the content
 
 # To Run Backend Project
 
